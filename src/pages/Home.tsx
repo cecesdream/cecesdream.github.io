@@ -2,6 +2,12 @@ import { motion, useScroll, useTransform, useInView, useSpring, useMotionValueEv
 import { Link } from "react-router-dom";
 import { Heart, User, ArrowDown, MapPin } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
+import heroImg from "../assets/liberia-hero.jpg";
+import blessingImg from "../assets/story-blessing.jpg";
+import economyImg from "../assets/economy-struggle.jpg";
+import scholarsImg from "../assets/kids-smiling.jpg";
+import graduationImg from "../assets/students-graduation.jpg";
+import classroomImg from "../assets/student-desk-writing.jpg";
 import {
   ComposableMap,
   Geographies,
@@ -234,13 +240,12 @@ export default function Home() {
   return (
     <div className="w-full bg-bg" ref={containerRef}>
       {/* Chapter 1: Hero */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-6 pt-20">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-6 pt-0">
          <motion.div style={{ y: yHeroImg, opacity: opacityHeroImg }} className="absolute inset-0 z-0">
            <img 
-             src="https://picsum.photos/seed/liberiahero/1920/1080" 
+             src={heroImg} 
              alt="Children in Liberia"
              className="w-full h-full object-cover opacity-20"
-             referrerPolicy="no-referrer"
            />
            <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-bg"></div>
          </motion.div>
@@ -314,7 +319,7 @@ export default function Home() {
            transition={{ duration: 1.5 }}
            className="absolute inset-0 z-0 pointer-events-none"
         >
-           <img src="https://picsum.photos/seed/struggle/1920/1080" className="w-full h-full object-cover grayscale mix-blend-multiply" referrerPolicy="no-referrer" />
+           <img src={economyImg} className="w-full h-full object-cover grayscale mix-blend-multiply" />
         </motion.div>
         
         <div className="max-w-[1000px] mx-auto text-center relative z-10">
@@ -323,7 +328,7 @@ export default function Home() {
              whileInView={{ opacity: 1, y: 0 }}
              viewport={{ once: false, margin: "-100px" }}
              transition={{ duration: 0.8 }}
-             className="text-[14px] uppercase tracking-[4px] font-bold text-accent mb-6"
+             className="text-[14px] uppercase tracking-[4px] font-bold text-white mb-6"
           >
             The Reality
           </motion.h4>
@@ -334,8 +339,8 @@ export default function Home() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mb-8"
           >
-            <h3 className="text-[80px] md:text-[200px] font-bold text-white leading-[0.9] tracking-tighter serif">
-              $3.<span className="text-accent">65</span>
+            <h3 className="text-[80px] md:text-[200px] font-bold text-accent leading-[0.9] tracking-tighter serif">
+              $3.65
             </h3>
           </motion.div>
           <motion.p
@@ -354,7 +359,7 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.4 }}
             className="text-[16px] md:text-[24px] font-medium text-white/70 mt-6 md:mt-8 max-w-[800px] mx-auto leading-[1.5] md:leading-[1.6]"
           >
-            When daily survival—securing food and shelter—is the priority, families are forced into impossible choices. School fees, required uniforms, and textbooks become an impossible luxury.
+            When daily survival, specifically securing food and shelter, is the priority, families are forced into impossible choices. School fees, required uniforms, and textbooks become an impossible luxury.
           </motion.p>
         </div>
       </section>
@@ -365,7 +370,7 @@ export default function Home() {
            <div className="max-w-[1200px] mx-auto w-full pt-8 md:pt-0">
               <div className="text-center mb-8 sm:mb-12 md:mb-20">
                 <h2 className="serif text-[32px] sm:text-[38px] md:text-[54px] text-text font-bold mb-2 md:mb-4">The Educational Gap</h2>
-                <p className="text-[14px] md:text-[18px] text-text-dim max-w-[600px] mx-auto leading-[1.5]">Because of extreme financial constraints, vast portions of the youth are left behind in the education system.</p>
+                <p className="text-[14px] md:text-[18px] text-text-dim max-w-[600px] mx-auto leading-[1.5] mb-12">Because of extreme financial constraints, vast portions of the youth are left behind in the education system.</p>
               </div>
 
               <div className="flex justify-center items-center">
@@ -407,7 +412,7 @@ export default function Home() {
                transition={{ duration: 0.8 }}
                className="order-1 lg:order-2 w-full h-[500px] lg:h-[650px] relative rounded-[4px] overflow-hidden border border-border shadow-lg"
             >
-               <img src="https://picsum.photos/seed/blessing/800/1000" alt="Student Portrait" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+               <img src={blessingImg} alt="Student Portrait" className="w-full h-full object-cover" />
                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                <div className="absolute bottom-6 left-6 text-white">
                  <h3 className="serif text-[28px] font-bold">Blessing, 14</h3>
@@ -417,81 +422,100 @@ export default function Home() {
          </div>
       </section>
 
-      {/* Chapter 6: Our Response */}
-      <section className="min-h-[70vh] flex flex-col items-center justify-center bg-bg text-text px-6 py-24 text-center">
-        <div className="max-w-[1000px] mx-auto">
-           <motion.h4
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, margin: "-100px" }}
+       {/* Chapter 6: Our Response */}
+       <section className="bg-bg text-text px-6 py-24 relative">
+         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="text-[14px] uppercase tracking-[4px] font-bold text-accent mb-8"
-           >
-             CECE's Dream
-           </motion.h4>
-           <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="serif text-[46px] md:text-[64px] lg:text-[72px] leading-[1.1] mb-12 text-text font-bold"
-           >
-             We are changing the <span className="italic text-accent">narrative.</span>
-           </motion.h2>
-           <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-[18px] md:text-[24px] font-medium text-text-dim max-w-[800px] mx-auto leading-[1.6]"
-           >
-             Through direct partnerships with local schools and global donors, we provide tuition assistance to students who face financial barriers—offering funding, hope, and a chance to dream again.
-           </motion.p>
-        </div>
-      </section>
+              className="rounded-[4px] overflow-hidden shadow-xl border border-border order-2 lg:order-1"
+            >
+              <img src={scholarsImg} alt="Students with CECE's Dream" className="w-full h-[400px] lg:h-[600px] object-cover" />
+            </motion.div>
 
-      {/* Chapter 7: Call to Action */}
-      <section className="py-32 md:py-40 text-center px-6 bg-text text-white flex flex-col items-center">
-        <motion.div
-           initial={{ opacity: 0, scale: 0.5 }}
-           whileInView={{ opacity: 1, scale: 1 }}
-           viewport={{ once: true }}
-           transition={{ duration: 0.6 }}
-        >
-          <Heart className="w-16 h-16 text-accent mb-10" />
-        </motion.div>
-        <motion.h2 
-           initial={{ opacity: 0, y: 50 }}
-           whileInView={{ opacity: 1, y: 0 }}
-           viewport={{ once: true }}
-           transition={{ duration: 0.8 }}
-           className="serif text-[42px] md:text-[68px] mb-8 max-w-[1000px] mx-auto leading-[1.1]"
-        >
-           Every child deserves the opportunity to learn.
-        </motion.h2>
-        <motion.p 
-           initial={{ opacity: 0 }}
-           whileInView={{ opacity: 1 }}
-           viewport={{ once: true }}
-           transition={{ duration: 0.8, delay: 0.2 }}
-           className="text-white/70 max-w-3xl mx-auto mb-16 text-[20px] md:text-[26px] font-medium leading-[1.6]"
-        >
-           Join us in making that dream a reality—one student at a time.
-        </motion.p>
-        <motion.div
-           initial={{ opacity: 0, y: 30 }}
-           whileInView={{ opacity: 1, y: 0 }}
-           viewport={{ once: true }}
-           transition={{ duration: 0.8, delay: 0.4 }}
-        >
-           <Link 
-             to="/donate" 
-             className="bg-accent text-white rounded-[2px] px-14 py-[24px] text-[16px] md:text-[18px] font-bold tracking-[2px] uppercase hover:bg-[#a00828] transition-all inline-flex items-center shadow-[0_10px_30px_rgba(191,10,48,0.3)] hover:shadow-[0_20px_40px_rgba(191,10,48,0.5)] hover:-translate-y-1"
+            <div className="order-1 lg:order-2">
+               <motion.h4
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, margin: "-100px" }}
+                  transition={{ duration: 0.8 }}
+                  className="text-[12px] uppercase tracking-[4px] font-bold text-accent mb-6"
+               >
+                 CECE's Dream
+               </motion.h4>
+               <motion.h2
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, margin: "-100px" }}
+                  transition={{ duration: 0.8, delay: 0.1 }}
+                  className="serif text-[42px] md:text-[54px] leading-[1.1] mb-8 text-text font-bold"
+               >
+                 We are changing the <span className="italic text-accent">narrative.</span>
+               </motion.h2>
+               <motion.p
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, margin: "-100px" }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="text-[18px] md:text-[20px] font-medium text-text-dim max-w-[800px] leading-[1.6]"
+               >
+                 Through direct partnerships with local schools and global donors, we provide tuition assistance to students who face financial barriers, offering funding, hope, and a chance to dream again.
+               </motion.p>
+            </div>
+         </div>
+       </section>
+
+       {/* Chapter 7: Call to Action */}
+       <section className="relative py-32 md:py-40 text-center px-6 text-white overflow-hidden">
+         <div className="absolute inset-0 z-0">
+            <img src={graduationImg} className="w-full h-full object-cover opacity-40 grayscale" />
+            <div className="absolute inset-0 bg-text/80 mix-blend-multiply"></div>
+         </div>
+         
+         <div className="relative z-10 flex flex-col items-center">
+           <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
            >
-             Give The Gift of Education 
-           </Link>
-        </motion.div>
-      </section>
+             <Heart className="w-16 h-16 text-accent mb-10" />
+           </motion.div>
+           <motion.h2 
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="serif text-[42px] md:text-[68px] mb-8 max-w-[1000px] mx-auto leading-[1.1]"
+           >
+              Every child deserves the opportunity to learn.
+           </motion.h2>
+           <motion.p 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-white/70 max-w-3xl mx-auto mb-16 text-[20px] md:text-[26px] font-medium leading-[1.6]"
+           >
+              Join us in making that dream a reality, one student at a time.
+           </motion.p>
+           <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+           >
+              <Link 
+                to="/donate" 
+                className="bg-accent text-white rounded-[2px] px-14 py-[24px] text-[16px] md:text-[18px] font-bold tracking-[2px] uppercase hover:bg-[#a00828] transition-all inline-flex items-center shadow-[0_10px_30px_rgba(191,10,48,0.3)] hover:shadow-[0_20px_40px_rgba(191,10,48,0.5)] hover:-translate-y-1"
+              >
+                Give The Gift of Education 
+              </Link>
+           </motion.div>
+         </div>
+       </section>
     </div>
   );
 }

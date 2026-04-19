@@ -70,7 +70,7 @@ export default function Donate() {
                    </ul>
                    
                    <a 
-                     href="https://donorbox.org" 
+                     href="https://donorbox.org/cece-790449" 
                      target="_blank" 
                      rel="noopener noreferrer"
                      className="w-full bg-accent text-white py-[20px] rounded-[2px] text-[15px] font-bold uppercase tracking-[1px] hover:bg-[#a00828] transition-colors flex justify-center items-center shadow-lg group"
@@ -105,7 +105,7 @@ export default function Donate() {
                   Not ready to make a monthly commitment? You can also make a one-time donation of any amount through our Donorbox portal.
                 </p>
                 <a 
-                   href="https://donorbox.org" 
+                   href="https://donorbox.org/cece-790449" 
                    target="_blank" 
                    rel="noopener noreferrer"
                    className="inline-block border border-white/30 hover:bg-white hover:text-text hover:border-white px-6 py-3 rounded-[2px] text-[12px] font-bold uppercase tracking-[1.5px] transition-colors"

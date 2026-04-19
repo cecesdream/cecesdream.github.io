@@ -1,15 +1,24 @@
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
+import founderImg from "../assets/davidheadshot.jpg";
+
+import sandraImg from "../assets/sandra-bruxvoort.png";
+import ashleyImg from "../assets/ashley-steyer.png";
+import jaredImg from "../assets/jared-vanlandingham.jpg";
+import michaelImg from "../assets/michael-taylor.png";
+import jennyImg from "../assets/jenny-waddle.png";
+import peterImg from "../assets/peter-lazarz.png";
+import teraImg from "../assets/tera-palozola.png";
 
 const boardMembers = [
-  "David Ziama - Founder",
-  "Peter Lazarz",
-  "Tera Palozola",
-  "Sandra Bruxvoort",
-  "Ashley Steyer",
-  "Jared Vanlandingham",
-  "Michael Taylor",
-  "Jenny Waddle"
+  { name: "David Ziama", role: "Founder", img: founderImg },
+  { name: "Peter Lazarz", role: "Board Member", img: peterImg },
+  { name: "Tera Palozola", role: "Board Member", img: teraImg },
+  { name: "Sandra Bruxvoort", role: "Board Member", img: sandraImg },
+  { name: "Ashley Steyer", role: "Board Member", img: ashleyImg },
+  { name: "Jared Vanlandingham", role: "Board Member", img: jaredImg },
+  { name: "Michael Taylor", role: "Board Member", img: michaelImg },
+  { name: "Jenny Waddle", role: "Board Member", img: jennyImg }
 ];
 
 export default function About() {
@@ -84,7 +93,7 @@ export default function About() {
                viewport={{ once: true }}
                transition={{ duration: 0.8 }}  
             >
-               <img src="https://picsum.photos/seed/founder/800/1000" alt="David Ziama, Founder of CECE's Dream" className="w-full h-auto aspect-[4/5] object-cover border border-white/20 shadow-2xl" referrerPolicy="no-referrer" />
+               <img src={founderImg} alt="David Ziama, Founder of CECE's Dream" className="w-full h-auto aspect-[4/5] object-cover border border-white/20 shadow-2xl" />
             </motion.div>
             <motion.div 
                className="lg:col-span-7"
@@ -124,10 +133,6 @@ export default function About() {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12">
             {boardMembers.map((member, index) => {
-              const nameParts = member.split(" - ");
-              const name = nameParts[0];
-              const role = nameParts.length > 1 ? nameParts[1] : "Board Member";
-              
               return (
                 <motion.div 
                   key={index}
@@ -137,11 +142,15 @@ export default function About() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="flex flex-col items-center text-center group"
                 >
-                  <div className="w-[120px] h-[120px] md:w-[150px] md:h-[150px] rounded-full overflow-hidden mb-6 border border-border bg-surface flex items-center justify-center">
-                    <img src={`https://picsum.photos/seed/${name.replace(/\s+/g, '')}/300/300`} alt={name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 grayscale group-hover:grayscale-0" referrerPolicy="no-referrer" />
+                  <div className="w-[120px] h-[120px] md:w-[150px] md:h-[150px] rounded-full overflow-hidden mb-6 border border-border bg-surface flex items-center justify-center shadow-sm">
+                    {member.img ? (
+                      <img src={member.img} alt={member.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    ) : (
+                      <div className="text-text-dim/20 bg-surface w-full h-full flex items-center justify-center">No Image</div>
+                    )}
                   </div>
-                  <h3 className="font-bold text-text text-[16px] md:text-[18px] mb-1">{name}</h3>
-                  <p className="text-accent uppercase tracking-[1px] text-[11px] font-bold">{role}</p>
+                  <h3 className="font-bold text-text text-[16px] md:text-[18px] mb-1">{member.name}</h3>
+                  <p className="text-accent uppercase tracking-[1px] text-[11px] font-bold">{member.role}</p>
                 </motion.div>
               );
             })}

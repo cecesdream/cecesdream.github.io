@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import logo from "../assets/logo-no-tag.png";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,8 +29,8 @@ export default function Navbar() {
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-surface border-b border-border shadow-none" : "bg-bg border-b border-border"}`}>
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
         <div className="flex justify-between items-center h-20">
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="serif text-2xl tracking-[2px] uppercase text-text font-bold">CECE's Dream</span>
+          <Link to="/" className="flex items-center space-x-3">
+            <img src={logo} alt="CECE's Dream Logo" className="w-20 h-20 object-contain" />
           </Link>
           
           <div className="hidden md:flex items-center space-x-8">
