@@ -283,7 +283,7 @@ export default function Home() {
       </section>
 
       {/* Chapter 2: The Nation of Liberia */}
-      <section ref={chapter2Ref} className="h-[250vh] relative bg-surface z-10 overflow-hidden">
+      <section ref={chapter2Ref} className="h-[250vh] relative bg-surface z-10">
         <div className="sticky top-0 h-[100dvh] w-full flex items-center overflow-hidden px-4 md:px-6">
           <div className="max-w-[1200px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-16 items-center pt-8 md:pt-0">
             <motion.div 
