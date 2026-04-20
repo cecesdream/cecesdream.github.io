@@ -1,6 +1,6 @@
 import { Facebook, Heart, Instagram, Mail, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-import logo from "../assets/logo-tag.png";
+import logo from "../assets/logo-tag-white.png";
 
 export default function Footer() {
   return (
