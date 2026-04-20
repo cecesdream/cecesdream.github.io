@@ -26,7 +26,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-surface border-b border-border shadow-none" : "bg-bg border-b border-border"}`}>
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 overflow-hidden ${scrolled ? "bg-surface border-b border-border shadow-none" : "bg-bg border-b border-border"}`}>
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
         <div className="flex justify-between items-center h-24">
           <Link to="/" className="flex items-center space-x-3">

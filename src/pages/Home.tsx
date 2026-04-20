@@ -283,7 +283,7 @@ export default function Home() {
       </section>
 
       {/* Chapter 2: The Nation of Liberia */}
-      <section ref={chapter2Ref} className="h-[250vh] relative bg-surface z-10">
+      <section ref={chapter2Ref} className="h-[250vh] relative bg-surface z-10 overflow-hidden">
         <div className="sticky top-0 h-[100dvh] w-full flex items-center overflow-hidden px-4 md:px-6">
           <div className="max-w-[1200px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-16 items-center pt-8 md:pt-0">
             <motion.div 
@@ -381,7 +381,7 @@ export default function Home() {
       </section>
 
       {/* Chapter 5: The Micro-Narrative Catalyst */}
-      <section className="bg-surface py-24 md:py-32 px-6 relative border-t border-border">
+      <section className="bg-surface py-24 md:py-32 px-6 relative border-t border-border overflow-hidden">
          <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
                initial={{ opacity: 0, x: -50 }}
@@ -423,7 +423,7 @@ export default function Home() {
       </section>
 
        {/* Chapter 6: Our Response */}
-       <section className="bg-bg text-text px-6 py-24 relative">
+       <section className="bg-bg text-text px-6 py-24 relative overflow-hidden">
          <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
