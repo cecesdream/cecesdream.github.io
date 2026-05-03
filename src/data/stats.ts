@@ -68,4 +68,11 @@ export const STATS = {
     label: "schools in Liberia can only be reached by canoe",
     source: "EMIS 2021-22, Access to School",
   },
+
+  overAgePrimary: {
+    value: 218995,
+    display: "218,995",
+    label: "primary school children in Liberia are too old for their grade",
+    source: "EMIS 2021-22, Annual School Census (38.1% of primary students)",
+  },
 } satisfies Record<string, Stat>;

@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { Heart, GraduationCap, ArrowRight } from "lucide-react";
+import { STATS } from "../data/stats";
 
 export default function Donate() {
   return (
@@ -94,11 +95,24 @@ export default function Donate() {
              <div className="bg-surface p-8 rounded-[4px] border border-border">
                 <h3 className="serif text-[24px] text-text mb-4">Tax Deductible</h3>
                 <p className="text-text-dim leading-[1.6]">
-                  CECE's Dream is a registered 501(c)(3) non-profit organization. All donations are secure and tax-deductible to the fullest extent of the law. 
+                  CECE's Dream is a registered 501(c)(3) non-profit organization. All donations are secure and tax-deductible to the fullest extent of the law.
                 </p>
                 <div className="w-12 h-1 bg-accent mt-6"></div>
              </div>
-             
+
+             <div className="bg-surface p-8 rounded-[4px] border border-border">
+                <h4 className="text-[11px] font-bold uppercase tracking-[2px] text-accent mb-4">The Need</h4>
+                <h3 className="serif text-[44px] md:text-[52px] font-bold text-text leading-[1] mb-4">
+                  {STATS.overAgePrimary.display}
+                </h3>
+                <p className="text-text-dim leading-[1.6] mb-6">
+                  primary school children in Liberia are too old for their grade. Your sponsorship helps one of them catch up.
+                </p>
+                <p className="text-[11px] uppercase tracking-[1.5px] text-text-dim/70 font-bold">
+                  Source: EMIS 2021-22
+                </p>
+             </div>
+
              <div className="bg-text text-white p-8 rounded-[4px]">
                 <h3 className="serif text-[24px] mb-4">Other Ways to Help</h3>
                 <p className="text-white/70 leading-[1.6] mb-6">
