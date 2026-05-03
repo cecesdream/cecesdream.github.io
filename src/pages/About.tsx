@@ -1,17 +1,18 @@
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
-import founderImg from "../assets/davidheadshot.jpg";
+import davidHeadshotImg from "../assets/davidheadshot.jpg";
+import davidFounderImg from "../assets/david-founder.jpg";
 
 import sandraImg from "../assets/sandra-bruxvoort.png";
 import ashleyImg from "../assets/ashley-steyer.png";
-import jaredImg from "../assets/jared-vanlandingham.jpg";
+import jaredImg from "../assets/jared-vanlandingham.png";
 import michaelImg from "../assets/michael-taylor.png";
 import jennyImg from "../assets/jenny-waddle.png";
 import peterImg from "../assets/peter-lazarz.png";
 import teraImg from "../assets/tera-palozola.png";
 
 const boardMembers = [
-  { name: "David Ziama", role: "Founder", img: founderImg },
+  { name: "David Ziama", role: "Founder", img: davidHeadshotImg },
   { name: "Peter Lazarz", role: "Board Member", img: peterImg },
   { name: "Tera Palozola", role: "Board Member", img: teraImg },
   { name: "Sandra Bruxvoort", role: "Board Member", img: sandraImg },
@@ -93,7 +94,7 @@ export default function About() {
                viewport={{ once: true }}
                transition={{ duration: 0.8 }}  
             >
-               <img src={founderImg} alt="David Ziama, Founder of CECE's Dream" className="w-full h-auto aspect-[4/5] object-cover border border-white/20 shadow-2xl" />
+               <img src={davidFounderImg} alt="David Ziama, Founder of CECE's Dream" className="w-full h-auto aspect-[4/5] object-cover border border-white/20 shadow-2xl" />
             </motion.div>
             <motion.div 
                className="lg:col-span-7"
@@ -142,7 +143,7 @@ export default function About() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="flex flex-col items-center text-center group"
                 >
-                  <div className="w-[120px] h-[120px] md:w-[150px] md:h-[150px] rounded-full overflow-hidden mb-6 border border-border bg-surface flex items-center justify-center shadow-sm">
+                  <div className="w-[120px] h-[120px] md:w-[150px] md:h-[150px] rounded-full overflow-hidden mb-6 border border-border bg-bg flex items-center justify-center shadow-sm">
                     {member.img ? (
                       <img src={member.img} alt={member.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     ) : (
