@@ -8,6 +8,7 @@ import economyImg from "../assets/economy-struggle.jpg";
 import scholarsImg from "../assets/kids-smiling.jpg";
 import graduationImg from "../assets/students-graduation.jpg";
 import classroomImg from "../assets/student-desk-writing.jpg";
+import { STATS } from "../data/stats";
 import {
   ComposableMap,
   Geographies,
@@ -59,6 +60,9 @@ function useStickyScrollProgress(ref: React.RefObject<HTMLElement>) {
 }
 
 // Sequential Pictograph Component
+const PRIMARY_NER = Math.round(STATS.primaryNER.value); // 46
+const COMPLETION_RATE = Math.round(STATS.primaryCompletionRate.value); // 10
+
 function SequentialPictograph({ progress }: { progress: number }) {
   let step = 0;
   if (progress > 0.05) step = 1;
@@ -67,8 +71,8 @@ function SequentialPictograph({ progress }: { progress: number }) {
 
   const getText = () => {
     if (step === 0 || step === 1) return { num: "100", label: "For every 100 kids in Liberia...", color: "text-[#002868]" };
-    if (step === 2) return { num: "38", label: "Only 38 will enroll in secondary school.", color: "text-[#002868]" };
-    return { num: "17", label: "And only 17 will graduate.", color: "text-[#BF0A30]" };
+    if (step === 2) return { num: String(PRIMARY_NER), label: `Only ${PRIMARY_NER} will be in primary school.`, color: "text-[#002868]" };
+    return { num: String(COMPLETION_RATE), label: `And only ${COMPLETION_RATE} will ever finish primary school.`, color: "text-[#BF0A30]" };
   };
 
   const { num, label, color } = getText();
@@ -83,9 +87,9 @@ function SequentialPictograph({ progress }: { progress: number }) {
           if (step === 1) {
             isActive = true;
           } else if (step === 2) {
-            if (i < 38) isActive = true;
+            if (i < PRIMARY_NER) isActive = true;
           } else if (step === 3) {
-            if (i < 17) {
+            if (i < COMPLETION_RATE) {
               isActive = true;
               isAccent = true;
             }
@@ -94,32 +98,32 @@ function SequentialPictograph({ progress }: { progress: number }) {
           let staggerDelay = 0;
           if (step === 1) staggerDelay = i * 0.01;
           else if (step === 2 && !isActive) staggerDelay = (99 - i) * 0.015;
-          else if (step === 3 && !isActive && i >= 17 && i < 38) staggerDelay = (37 - i) * 0.03;
+          else if (step === 3 && !isActive && i >= COMPLETION_RATE && i < PRIMARY_NER) staggerDelay = (PRIMARY_NER - 1 - i) * 0.03;
 
           return (
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ 
-                opacity: step === 0 ? 0 : isActive ? 1 : 0.2, 
+              animate={{
+                opacity: step === 0 ? 0 : isActive ? 1 : 0.2,
                 scale: step === 0 ? 0.8 : 1 // Never shrink so the ghosts hold space
               }}
-              transition={{ 
-                duration: 0.5, 
-                delay: staggerDelay 
+              transition={{
+                duration: 0.5,
+                delay: staggerDelay
               }}
             >
-              <User 
-                className={`w-[14px] h-[14px] sm:w-[18px] sm:h-[18px] md:w-[22px] md:h-[22px] transition-colors duration-500 ${isAccent ? "text-[#BF0A30] drop-shadow-md" : isActive ? "text-[#002868] drop-shadow-md" : "text-[#002868]"}`} 
-                strokeWidth={isActive ? 2.5 : 1.5} 
+              <User
+                className={`w-[14px] h-[14px] sm:w-[18px] sm:h-[18px] md:w-[22px] md:h-[22px] transition-colors duration-500 ${isAccent ? "text-[#BF0A30] drop-shadow-md" : isActive ? "text-[#002868] drop-shadow-md" : "text-[#002868]"}`}
+                strokeWidth={isActive ? 2.5 : 1.5}
               />
             </motion.div>
           );
         })}
       </div>
-      
+
       <div className="h-[90px] md:h-[140px] flex flex-col items-center justify-start text-center mt-2 md:mt-4">
-        <motion.h3 
+        <motion.h3
           key={`num-${step}`}
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -127,7 +131,7 @@ function SequentialPictograph({ progress }: { progress: number }) {
         >
           {num}
         </motion.h3>
-        <motion.p 
+        <motion.p
           key={`label-${step}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -300,7 +304,7 @@ export default function Home() {
                 Located on the West Coast of Africa, Liberia is a beautiful country brimming with potential. However, it is still rebuilding its infrastructure and school systems after a devastating 14-year civil war and subsequent health crises, like the Ebola outbreak.
               </p>
               <p className="text-[14px] md:text-[18px] text-text-dim leading-[1.5] md:leading-[1.6]">
-                Today, over <strong className="text-text">60% of Liberia's population is under the age of 25</strong>. The future of the entire nation rests squarely on ensuring this massive youth generation receives a quality education.
+                Today, <strong className="text-text">more than 40% of Liberia's population is of school-going age</strong>, and that share is expected to keep growing for the rest of this century. The future of the entire nation rests on whether this generation can get to a classroom.
               </p>
             </motion.div>
             <div className="flex justify-center w-full">
@@ -340,7 +344,7 @@ export default function Home() {
             className="mb-8"
           >
             <h3 className="text-[80px] md:text-[200px] font-bold text-accent leading-[0.9] tracking-tighter serif">
-              $3.65
+              {STATS.gdpPerCapitaDaily.display}
             </h3>
           </motion.div>
           <motion.p
@@ -350,7 +354,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="serif text-[26px] sm:text-[34px] md:text-[54px] leading-[1.2]"
           >
-            The average daily income for a family.
+            The average daily income for a person in Liberia.
           </motion.p>
           <motion.p
             initial={{ opacity: 0 }}
@@ -380,7 +384,81 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Chapter 5: The Micro-Narrative Catalyst */}
+      {/* Chapter 5: The Quality Crisis */}
+      <section className="min-h-[80vh] flex items-center justify-center bg-text text-white px-6 py-24 md:py-28 relative overflow-hidden z-40">
+        <motion.div
+           initial={{ scale: 1.1, opacity: 0 }}
+           whileInView={{ scale: 1, opacity: 0.15 }}
+           viewport={{ once: false }}
+           transition={{ duration: 1.5 }}
+           className="absolute inset-0 z-0 pointer-events-none"
+        >
+           <img src={classroomImg} className="w-full h-full object-cover grayscale mix-blend-multiply" />
+        </motion.div>
+
+        <div className="max-w-[1000px] mx-auto text-center relative z-10">
+          <motion.h4
+             initial={{ opacity: 0, y: 20 }}
+             whileInView={{ opacity: 1, y: 0 }}
+             viewport={{ once: false, margin: "-100px" }}
+             transition={{ duration: 0.8 }}
+             className="text-[14px] uppercase tracking-[4px] font-bold text-white mb-6"
+          >
+            The Quality Crisis
+          </motion.h4>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: false, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mb-6 md:mb-8"
+          >
+            <h3 className="text-[80px] md:text-[200px] font-bold text-accent leading-[0.9] tracking-tighter serif">
+              {STATS.seniorMathTextbookRatio.display} students
+            </h3>
+          </motion.div>
+          <motion.p
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="serif text-[26px] sm:text-[34px] md:text-[54px] leading-[1.2]"
+          >
+            share a single math textbook in a Liberian high school.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            whileInView={{ opacity: 1, scaleX: 1 }}
+            viewport={{ once: false, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="w-24 h-[2px] bg-white/30 mx-auto my-10 md:my-14 origin-center"
+          />
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="serif text-[24px] sm:text-[30px] md:text-[42px] leading-[1.25] max-w-[800px] mx-auto"
+          >
+            And <span className="text-accent font-bold">{STATS.canoeSchools.display} schools</span> in Liberia can only be reached by canoe.
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: false }}
+            transition={{ duration: 1, delay: 0.7 }}
+            className="text-[14px] md:text-[18px] font-medium text-white/60 mt-6 md:mt-8 max-w-[700px] mx-auto leading-[1.5] md:leading-[1.6]"
+          >
+            Even when Liberian children make it to a classroom, the basics aren't there. Textbooks are scarce. Many schools can only be reached by canoe. Donations buy what the system cannot.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Chapter 6: The Micro-Narrative Catalyst */}
       <section className="bg-surface py-24 md:py-32 px-6 relative border-t border-border overflow-hidden">
          <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -398,7 +476,7 @@ export default function Home() {
                  "Our statistics are sobering, but they blind us to the brilliant individuals hiding behind them."
                </p>
                <p className="text-[18px] text-text-dim leading-[1.6] mb-8">
-                 Blessing is 14 years old. After her father grew ill, her family could no longer afford the $50 term fee for her secondary school. Like the 62% of her peers, she was forced to drop out to help sell goods at the local market. Her dream of becoming a nurse faded.
+                 Blessing is 14 years old. After her father grew ill, her family could no longer afford the $50 term fee for her secondary school. Like more than 4 in 5 teenage girls in Liberia who aren't in middle school, she was forced to drop out to help sell goods at the local market. Her dream of becoming a nurse faded.
                </p>
                <Link to="/blog" className="inline-flex items-center text-[14px] uppercase font-bold text-text hover:text-accent tracking-[2px] transition-colors border-b border-text hover:border-accent pb-1">
                  Read Her Full Recovery Story <Heart className="w-4 h-4 ml-2" />
