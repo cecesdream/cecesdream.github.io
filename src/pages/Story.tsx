@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import posts from "../data/posts.json";
 
 function formatDate(iso: string) {
@@ -57,13 +57,31 @@ export default function Story() {
             className="story-body text-[18px] text-text-dim leading-[1.7]"
             dangerouslySetInnerHTML={{ __html: post.body }}
           />
-
-          <div className="mt-16 pt-10 border-t border-border">
-            <Link to="/blog" className="inline-flex items-center text-[14px] uppercase font-bold text-text hover:text-accent tracking-[2px] transition-colors border-b border-text hover:border-accent pb-1">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to all stories
-            </Link>
-          </div>
         </motion.div>
+      </div>
+
+      <section className="bg-text text-white px-6 py-20 md:py-24">
+        <div className="max-w-[760px] mx-auto text-center">
+          <h4 className="text-[12px] uppercase tracking-[4px] font-bold text-white/70 mb-6">Take Action</h4>
+          <h2 className="serif text-[34px] md:text-[48px] leading-[1.15] mb-6">
+            Help change the story.
+          </h2>
+          <p className="text-[16px] md:text-[18px] text-white/80 leading-[1.6] mb-10 max-w-[560px] mx-auto">
+            A $30/month sponsorship covers a Liberian student's full school year &mdash; tuition, uniform, and books.
+          </p>
+          <Link
+            to="/donate"
+            className="inline-flex items-center bg-accent text-white px-10 py-[18px] rounded-[2px] text-[14px] font-bold uppercase tracking-[1.5px] hover:bg-[#a00828] transition-colors shadow-lg group"
+          >
+            Sponsor a student <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
+      </section>
+
+      <div className="max-w-[760px] mx-auto px-6 md:px-10 py-10">
+        <Link to="/blog" className="inline-flex items-center text-[14px] uppercase font-bold text-text hover:text-accent tracking-[2px] transition-colors border-b border-text hover:border-accent pb-1">
+          <ArrowLeft className="w-4 h-4 mr-2" /> Back to all stories
+        </Link>
       </div>
     </article>
   );

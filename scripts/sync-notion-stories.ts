@@ -1,7 +1,9 @@
 import { Client } from "@notionhq/client";
 import { writeFile, mkdir, readdir, unlink } from "node:fs/promises";
 import { join, extname } from "node:path";
-import "dotenv/config";
+import dotenv from "dotenv";
+
+dotenv.config({ path: [".env.local", ".env"] });
 
 const NOTION_API_TOKEN = process.env.NOTION_API_TOKEN;
 const NOTION_STORIES_DB_ID = process.env.NOTION_STORIES_DB_ID;
@@ -170,11 +172,17 @@ async function main() {
   await mkdir(IMAGES_DIR, { recursive: true });
   await clearOldImages();
 
+  const db: any = await notion.databases.retrieve({ database_id: NOTION_STORIES_DB_ID! });
+  const dataSourceId = db.data_sources?.[0]?.id;
+  if (!dataSourceId) {
+    throw new Error("No data source found on the Stories database.");
+  }
+
   const dbResults: any[] = [];
   let cursor: string | undefined;
   do {
-    const res = await notion.databases.query({
-      database_id: NOTION_STORIES_DB_ID!,
+    const res = await notion.dataSources.query({
+      data_source_id: dataSourceId,
       filter: { property: "Published", checkbox: { equals: true } },
       sorts: [{ property: "Date", direction: "descending" }],
       start_cursor: cursor,

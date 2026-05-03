@@ -1,14 +1,16 @@
 import { motion, useScroll, useTransform, useInView, useSpring, useMotionValueEvent } from "motion/react";
 import { Link } from "react-router-dom";
-import { Heart, User, ArrowDown, MapPin } from "lucide-react";
+import { Heart, User, ArrowDown, ArrowRight, MapPin } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import heroImg from "../assets/liberia-hero.jpg";
-import blessingImg from "../assets/story-blessing.jpg";
 import economyImg from "../assets/economy-struggle.jpg";
 import scholarsImg from "../assets/kids-smiling.jpg";
 import graduationImg from "../assets/students-graduation.jpg";
 import classroomImg from "../assets/student-desk-writing.jpg";
 import { STATS } from "../data/stats";
+import posts from "../data/posts.json";
+
+const featuredPost = posts[0];
 import {
   ComposableMap,
   Geographies,
@@ -458,47 +460,47 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Chapter 6: The Micro-Narrative Catalyst */}
-      <section className="bg-surface py-24 md:py-32 px-6 relative border-t border-border overflow-hidden">
-         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-               initial={{ opacity: 0, x: -50 }}
-               whileInView={{ opacity: 1, x: 0 }}
-               viewport={{ once: true }}
-               transition={{ duration: 0.8 }}
-               className="order-2 lg:order-1"
-            >
-               <h4 className="text-[12px] uppercase tracking-[3px] font-bold text-accent mb-6">Behind the Numbers</h4>
-               <h2 className="serif text-[42px] md:text-[54px] text-text leading-[1.1] mb-8">
-                 Meet Blessing.
-               </h2>
-               <p className="text-[18px] text-text-dim leading-[1.6] mb-6 italic border-l-4 border-accent pl-6">
-                 "Our statistics are sobering, but they blind us to the brilliant individuals hiding behind them."
-               </p>
-               <p className="text-[18px] text-text-dim leading-[1.6] mb-8">
-                 Blessing is 14 years old. After her father grew ill, her family could no longer afford the $50 term fee for her secondary school. Like more than 4 in 5 teenage girls in Liberia who aren't in middle school, she was forced to drop out to help sell goods at the local market. Her dream of becoming a nurse faded.
-               </p>
-               <Link to="/blog" className="inline-flex items-center text-[14px] uppercase font-bold text-text hover:text-accent tracking-[2px] transition-colors border-b border-text hover:border-accent pb-1">
-                 Read Her Full Recovery Story <Heart className="w-4 h-4 ml-2" />
-               </Link>
-            </motion.div>
+      {/* Chapter 6: Featured Story */}
+      {featuredPost && (
+        <section className="bg-surface py-24 md:py-32 px-6 relative border-t border-border overflow-hidden">
+           <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <motion.div
+                 initial={{ opacity: 0, x: -50 }}
+                 whileInView={{ opacity: 1, x: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ duration: 0.8 }}
+                 className="order-2 lg:order-1"
+              >
+                 <h4 className="text-[12px] uppercase tracking-[3px] font-bold text-accent mb-6">Continue Reading</h4>
+                 <h2 className="serif text-[42px] md:text-[54px] text-text leading-[1.1] mb-8">
+                   {featuredPost.title}
+                 </h2>
+                 <p className="text-[18px] text-text-dim leading-[1.6] mb-8">
+                   {featuredPost.excerpt}
+                 </p>
+                 <Link to={`/blog/${featuredPost.slug}`} className="inline-flex items-center text-[14px] uppercase font-bold text-text hover:text-accent tracking-[2px] transition-colors border-b border-text hover:border-accent pb-1">
+                   Read the full story <ArrowRight className="w-4 h-4 ml-2" />
+                 </Link>
+              </motion.div>
 
-            <motion.div
-               initial={{ opacity: 0, x: 50 }}
-               whileInView={{ opacity: 1, x: 0 }}
-               viewport={{ once: true }}
-               transition={{ duration: 0.8 }}
-               className="order-1 lg:order-2 w-full h-[500px] lg:h-[650px] relative rounded-[4px] overflow-hidden border border-border shadow-lg"
-            >
-               <img src={blessingImg} alt="Student Portrait" className="w-full h-full object-cover" />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-               <div className="absolute bottom-6 left-6 text-white">
-                 <h3 className="serif text-[28px] font-bold">Blessing, 14</h3>
-                 <p className="text-white/80 font-medium text-[14px] uppercase tracking-[1px] mt-1">Future Nurse, Monrovia</p>
-               </div>
-            </motion.div>
-         </div>
-      </section>
+              <motion.div
+                 initial={{ opacity: 0, x: 50 }}
+                 whileInView={{ opacity: 1, x: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ duration: 0.8 }}
+                 className="order-1 lg:order-2 w-full h-[500px] lg:h-[650px] relative rounded-[4px] overflow-hidden border border-border shadow-lg"
+              >
+                 <Link to={`/blog/${featuredPost.slug}`} className="block w-full h-full group">
+                   <img src={featuredPost.image} alt={featuredPost.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                   <div className="absolute bottom-6 left-6 text-white">
+                     <p className="text-[12px] font-bold uppercase tracking-[2px] text-white/80">{featuredPost.category}</p>
+                   </div>
+                 </Link>
+              </motion.div>
+           </div>
+        </section>
+      )}
 
        {/* Chapter 6: Our Response */}
        <section className="bg-bg text-text px-6 py-24 relative overflow-hidden">
