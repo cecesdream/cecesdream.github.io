@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Mail, MapPin, Phone, Send, CheckCircle2, AlertCircle, Facebook, Instagram } from "lucide-react";
+import LinktreeIcon from "../components/LinktreeIcon";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -92,23 +93,32 @@ export default function Contact() {
             <div className="border-t border-border pt-8 mt-8">
               <h5 className="font-bold text-[14px] uppercase tracking-[1.5px] text-text mb-6">Connect With Us</h5>
               <div className="flex space-x-4">
-                <a 
-                  href="https://www.facebook.com/cecesdreamnonprofit" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://www.facebook.com/cecesdreamorg/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 bg-surface border border-border rounded-[2px] flex items-center justify-center text-text-dim hover:text-accent hover:border-accent transition-all"
                   title="Facebook"
                 >
                   <Facebook className="w-5 h-5" />
                 </a>
-                <a 
-                  href="https://www.instagram.com/cecesdreamnonprofit" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://www.instagram.com/ceces.dream"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 bg-surface border border-border rounded-[2px] flex items-center justify-center text-text-dim hover:text-accent hover:border-accent transition-all"
                   title="Instagram"
                 >
                   <Instagram className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://linktr.ee/ceces.dream"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-surface border border-border rounded-[2px] flex items-center justify-center text-text-dim hover:text-accent hover:border-accent transition-all"
+                  title="Linktree"
+                >
+                  <LinktreeIcon className="w-5 h-5" />
                 </a>
               </div>
             </div>

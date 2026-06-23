@@ -44,11 +44,11 @@ export default function Donate() {
                 <div className="flex-1 w-full">
                   <div className="bg-bg border-2 border-accent rounded-[4px] p-6 text-center cursor-pointer hover:bg-accent/5 transition-colors relative mb-6">
                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white text-[10px] font-bold uppercase tracking-[2px] px-3 py-1 rounded-full">Most Impactful</span>
-                     <h3 className="serif text-[42px] font-bold text-text leading-[1] mb-1">$30</h3>
+                     <h3 className="serif text-[42px] font-bold text-text leading-[1] mb-1">$50</h3>
                      <p className="text-text-dim uppercase tracking-[1px] text-[12px] font-bold">Per Month</p>
                   </div>
                   <div className="bg-bg border-2 border-border hover:border-text rounded-[4px] p-6 text-center cursor-pointer hover:bg-surface transition-colors">
-                     <h3 className="serif text-[32px] font-bold text-text leading-[1] mb-1">$360</h3>
+                     <h3 className="serif text-[32px] font-bold text-text leading-[1] mb-1">$600</h3>
                      <p className="text-text-dim uppercase tracking-[1px] text-[12px] font-bold">Per Year</p>
                   </div>
                 </div>

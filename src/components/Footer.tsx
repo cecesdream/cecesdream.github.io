@@ -1,6 +1,7 @@
 import { Facebook, Heart, Instagram, Mail, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo-tag-white.png";
+import LinktreeIcon from "./LinktreeIcon";
 
 export default function Footer() {
   return (
@@ -15,11 +16,14 @@ export default function Footer() {
               Every child deserves the opportunity to learn. At CECE’s Dream, we’re making that dream a reality, one student at a time by providing tuition assistance and hope.
             </p>
             <div className="flex space-x-4">
-              <a href="https://www.facebook.com/cecesdreamnonprofit" target="_blank" rel="noopener noreferrer" className="h-12 w-12 rounded-[2px] border border-white/30 flex items-center justify-center hover:border-accent hover:text-accent transition-all text-white">
+              <a href="https://www.facebook.com/cecesdreamorg/" target="_blank" rel="noopener noreferrer" className="h-12 w-12 rounded-[2px] border border-white/30 flex items-center justify-center hover:border-accent hover:text-accent transition-all text-white">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="https://www.instagram.com/cecesdreamnonprofit" target="_blank" rel="noopener noreferrer" className="h-12 w-12 rounded-[2px] border border-white/30 flex items-center justify-center hover:border-accent hover:text-accent transition-all text-white">
+              <a href="https://www.instagram.com/ceces.dream" target="_blank" rel="noopener noreferrer" className="h-12 w-12 rounded-[2px] border border-white/30 flex items-center justify-center hover:border-accent hover:text-accent transition-all text-white">
                 <Instagram className="w-5 h-5" />
+              </a>
+              <a href="https://linktr.ee/ceces.dream" target="_blank" rel="noopener noreferrer" aria-label="Linktree" className="h-12 w-12 rounded-[2px] border border-white/30 flex items-center justify-center hover:border-accent hover:text-accent transition-all text-white">
+                <LinktreeIcon className="w-5 h-5" />
               </a>
               <a href="mailto:cece@cecesdream.org" className="h-12 w-12 rounded-[2px] border border-white/30 flex items-center justify-center hover:border-accent hover:text-accent transition-all text-white">
                 <Mail className="w-5 h-5" />

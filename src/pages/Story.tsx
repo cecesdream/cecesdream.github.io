@@ -67,7 +67,7 @@ export default function Story() {
             Help change the story.
           </h2>
           <p className="text-[16px] md:text-[18px] text-white/80 leading-[1.6] mb-10 max-w-[560px] mx-auto">
-            A $30/month sponsorship covers a Liberian student's full school year &mdash; tuition, uniform, and books.
+            A $50/month sponsorship covers a Liberian student's full school year &mdash; tuition, uniform, and books.
           </p>
           <Link
             to="/donate"
