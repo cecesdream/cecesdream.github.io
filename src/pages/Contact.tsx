@@ -1,7 +1,39 @@
-import { useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Mail, MapPin, Phone, Send, CheckCircle2, AlertCircle, Facebook, Instagram } from "lucide-react";
 import LinktreeIcon from "../components/LinktreeIcon";
+
+// The deploy workflow sets no env, and an unset VITE_API_BASE_URL used to
+// build into the bundle as the literal "undefined/public/contact".
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://app.cecesdream.org/api/v1";
+
+// Cloudflare Turnstile. The site key is public. Dev uses Cloudflare's
+// always-pass test key, because the real one only works on cecesdream.org.
+const TURNSTILE_SITE_KEY = import.meta.env.DEV
+  ? "1x00000000000000000000AA"
+  : "0x4AAAAAAFT-uoSeTMKvI4WC";
+const TURNSTILE_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+      reset: (id?: string) => void;
+      remove: (id: string) => void;
+    };
+  }
+}
+
+function loadTurnstile(): Promise<void> {
+  if (window.turnstile) return Promise.resolve();
+  const existing = document.querySelector<HTMLScriptElement>(`script[src="${TURNSTILE_SRC}"]`);
+  const script = existing ?? Object.assign(document.createElement("script"), { src: TURNSTILE_SRC, async: true });
+  if (!existing) document.head.appendChild(script);
+  return new Promise((resolve, reject) => {
+    script.addEventListener("load", () => resolve());
+    script.addEventListener("error", () => reject(new Error("Turnstile failed to load")));
+  });
+}
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -10,27 +42,63 @@ export default function Contact() {
     message: ""
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const widgetId = useRef<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // The form unmounts on success ("Send another" brings it back), so the
+  // widget is rendered whenever the container exists.
+  useEffect(() => {
+    if (status === 'success') return;
+    let cancelled = false;
+    loadTurnstile()
+      .then(() => {
+        if (cancelled || !turnstileRef.current || !window.turnstile || widgetId.current) return;
+        widgetId.current = window.turnstile.render(turnstileRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          callback: (token: string) => setTurnstileToken(token),
+          "expired-callback": () => setTurnstileToken(null),
+          "error-callback": () => setTurnstileToken(null),
+        });
+      })
+      .catch((error) => console.error(error));
+    return () => {
+      cancelled = true;
+      if (widgetId.current && window.turnstile) window.turnstile.remove(widgetId.current);
+      widgetId.current = null;
+      setTurnstileToken(null);
+    };
+  }, [status === 'success']);
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setStatus('loading');
+    setErrorMessage(null);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/public/contact`, {
+      const response = await fetch(`${API_BASE_URL}/public/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, turnstile_token: turnstileToken }),
       });
 
-      if (!response.ok) throw new Error("Failed to send message");
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        throw new Error(typeof body?.detail === "string" ? body.detail : "Failed to send message");
+      }
 
       setStatus('success');
       setFormData({ name: "", email: "", message: "" });
     } catch (error) {
       console.error("Contact form error:", error);
+      setErrorMessage(error instanceof Error && error.message !== "Failed to send message" ? error.message : null);
       setStatus('error');
+      // A token is single-use; get a fresh one for the retry.
+      if (widgetId.current && window.turnstile) window.turnstile.reset(widgetId.current);
+      setTurnstileToken(null);
     }
   };
 
@@ -196,9 +264,11 @@ export default function Contact() {
                      ></textarea>
                    </div>
                    
+                   <div ref={turnstileRef} className="min-h-[65px]" />
+
                    <button 
                      type="submit"
-                     disabled={status === 'loading'}
+                     disabled={status === 'loading' || !turnstileToken}
                      className="w-full bg-text text-white py-[20px] rounded-[2px] text-[14px] font-bold uppercase tracking-[2px] hover:bg-accent transition-colors mt-4 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                    >
                      {status === 'loading' ? (
@@ -217,7 +287,7 @@ export default function Contact() {
                    {status === 'error' && (
                      <div className="flex items-center gap-3 text-red-500 text-[14px] mt-4 bg-red-500/10 p-3 rounded-[2px]">
                        <AlertCircle className="w-4 h-4" />
-                       Something went wrong. Please try again.
+                       {errorMessage ?? "Something went wrong. Please try again."}
                      </div>
                    )}
                 </form>
