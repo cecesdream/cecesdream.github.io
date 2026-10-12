@@ -1,20 +1,34 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# cecesdream.org
 
-# Run and deploy your AI Studio app
+The marketing site for CECE's Dream: React, Vite and Tailwind, deployed to
+GitHub Pages (custom domain in `public/CNAME`).
 
-This contains everything you need to run your app locally.
+## Run locally
 
-View your app in AI Studio: https://ai.studio/apps/f7aef9d3-ce22-4869-abaf-cb651cb9df0f
+```sh
+npm install --legacy-peer-deps
+npm run dev        # http://localhost:3000
+```
 
-## Run Locally
+Judge layout and performance on the production build, not the dev server:
 
-**Prerequisites:**  Node.js
+```sh
+npm run build && npm run preview
+```
 
+## Deploy
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Every push to `main` builds and deploys (`.github/workflows/deploy.yml`).
+
+## Stories
+
+Stories are written in Notion. `.github/workflows/sync-stories.yml` pulls them
+nightly into `src/data/posts.json` and `public/story-images/`, commits, and
+redeploys. Run it by hand from Actions → "Sync stories from Notion" to publish
+straight away. Locally: `npm run sync-stories` with `NOTION_API_TOKEN` and
+`NOTION_STORIES_DB_ID` in `.env.local`.
+
+## Donations and newsletter
+
+Both are Zeffy embeds (`src/components/ZeffyForm.tsx`). Zeffy's Cloudflare
+blocks headless browsers; test those forms in a visible browser.
