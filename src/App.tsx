@@ -17,6 +17,7 @@ const Blog = lazy(() => import("./pages/Blog"));
 const Story = lazy(() => import("./pages/Story"));
 const Donate = lazy(() => import("./pages/Donate"));
 const Contact = lazy(() => import("./pages/Contact"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="/blog/:slug" element={<Story />} />
             <Route path="/donate" element={<Donate />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
           </Suspense>
         </main>
