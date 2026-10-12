@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
+import NewsletterSignup from "./components/NewsletterSignup";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Blog from "./pages/Blog";
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>
+        <NewsletterSignup />
         <Footer />
       </div>
     </BrowserRouter>
