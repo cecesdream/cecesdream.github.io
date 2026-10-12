@@ -9,9 +9,11 @@ declare global {
 }
 
 interface ZeffyFormProps {
-  /** The form's path on zeffy.com, e.g. "/embed/donation-form/sponsor-one-dreamer". */
+  /** The form's path on zeffy.com, as in the embed code's data-form-url. */
   formPath: string;
   title: string;
+  /** Height of the plain-iframe fallback, shown only if Zeffy's script can't load. */
+  fallbackHeight?: number;
 }
 
 /**
@@ -21,7 +23,7 @@ interface ZeffyFormProps {
  * every mount after that. If the script can't load (an ad blocker, say), the
  * plain iframe Zeffy supplies as a fallback is shown instead.
  */
-export default function ZeffyForm({ formPath, title }: ZeffyFormProps) {
+export default function ZeffyForm({ formPath, title, fallbackHeight = 800 }: ZeffyFormProps) {
   const fallbackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ export default function ZeffyForm({ formPath, title }: ZeffyFormProps) {
     <div>
       <div data-zeffy-embed data-form-url={formPath} />
       <div data-zeffy-embed-fallback ref={fallbackRef} style={{ display: "none" }}>
-        <div className="relative overflow-hidden w-full" style={{ height: 800 }}>
+        <div className="relative overflow-hidden w-full" style={{ height: fallbackHeight }}>
           <iframe
             title={title}
             className="absolute inset-0 w-full h-full border-0"
