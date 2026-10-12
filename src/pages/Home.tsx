@@ -1,7 +1,8 @@
-import { motion, useScroll, useTransform, useInView, useSpring, useMotionValueEvent } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { Link } from "react-router-dom";
 import { Heart, User, ArrowDown, ArrowRight, MapPin } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { lazy, Suspense, useRef, type RefObject } from "react";
+import { useStickyScrollProgress } from "../hooks/useStickyScrollProgress";
 import heroImg from "../assets/liberia-hero.jpg";
 import economyImg from "../assets/economy-struggle.jpg";
 import scholarsImg from "../assets/kids-smiling.jpg";
@@ -10,66 +11,24 @@ import classroomImg from "../assets/student-desk-writing.jpg";
 import { STATS } from "../data/stats";
 import posts from "../data/posts.json";
 
+// The globe pulls in react-simple-maps and d3; load it after the hero.
+const GlobeTracking = lazy(() => import("../components/GlobeTracking"));
+
 const featuredPost = posts[0];
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  Marker,
-  Sphere,
-  Graticule
-} from "react-simple-maps";
-
-const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
-
-function useStickyScrollProgress(ref: React.RefObject<HTMLElement>) {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    let tick = false;
-    const handleScroll = () => {
-      if (tick) return;
-      tick = true;
-      
-      window.requestAnimationFrame(() => {
-        if (ref.current) {
-          const rect = ref.current.getBoundingClientRect();
-          const winH = window.innerHeight;
-          // Total distance the user scrolls vertically while the container is pinned
-          const totalScroll = rect.height - winH;
-          // How far down the pinned container has traveled
-          let p = -rect.top / totalScroll;
-          
-          if (!isFinite(p) || isNaN(p)) p = 0;
-          p = Math.max(0, Math.min(1, p));
-          setProgress(p);
-        }
-        tick = false;
-      });
-    };
-
-    window.addEventListener("scroll", handleScroll, true);
-    window.addEventListener("resize", handleScroll);
-    setTimeout(handleScroll, 100);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll, true);
-      window.removeEventListener("resize", handleScroll);
-    };
-  }, [ref]);
-
-  return progress;
-}
 
 // Sequential Pictograph Component
 const PRIMARY_NER = Math.round(STATS.primaryNER.value); // 46
 const COMPLETION_RATE = Math.round(STATS.primaryCompletionRate.value); // 10
 
-function SequentialPictograph({ progress }: { progress: number }) {
-  let step = 0;
-  if (progress > 0.05) step = 1;
-  if (progress > 0.40) step = 2;
-  if (progress > 0.75) step = 3;
+const pictographStep = (progress: number) => {
+  if (progress > 0.75) return 3;
+  if (progress > 0.40) return 2;
+  if (progress > 0.05) return 1;
+  return 0;
+};
+
+function SequentialPictograph({ sectionRef }: { sectionRef: RefObject<HTMLElement | null> }) {
+  const step = useStickyScrollProgress(sectionRef, pictographStep);
 
   const getText = () => {
     if (step === 0 || step === 1) return { num: "100", label: "For every 100 kids in Liberia...", color: "text-[#002868]" };
@@ -147,94 +106,11 @@ function SequentialPictograph({ progress }: { progress: number }) {
   );
 }
 
-// Interactive Scroll-Driven SVG Globe
-function GlobeTracking({ progress }: { progress: number }) {
-  // Phase 1 (0 to 0.5): Rotate
-  // Phase 2 (0.5 to 1.0): Zoom into Liberia
-  const rotProgress = Math.min(1, progress * 2);
-  const zoomProgress = Math.max(0, (progress - 0.5) * 2);
-
-  const rx = 100 - (rotProgress * 90.6);
-  const ry = -40 + (rotProgress * 33.6);
-  const scale = 240 + (zoomProgress * 1100);
-
-  const snapRx = Math.round(rx * 10) / 10;
-  const snapRy = Math.round(ry * 10) / 10;
-  const snapScale = Math.round(scale);
-
-  const markerOpacity = zoomProgress > 0.2 ? Math.min(1, (zoomProgress - 0.2) * 2) : 0;
-
-  return (
-    <div style={{ position: "relative" }} className="w-full max-w-[280px] sm:max-w-[350px] md:max-w-[500px] aspect-square mx-auto group">
-      <ComposableMap
-        projection="geoOrthographic"
-        projectionConfig={{
-          rotate: [snapRx, snapRy, 0],
-          scale: snapScale
-        }}
-        style={{ width: "100%", height: "100%" }}
-        className="opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-xl"
-      >
-        <Sphere stroke="#D6D6DA" strokeWidth={0.5} fill="#F8F9FA" id="sphere" />
-        <Graticule stroke="#EAEAEC" strokeWidth={0.5} />
-        
-        <Geographies geography={geoUrl}>
-          {({ geographies }) =>
-            geographies.map((geo) => {
-              const isLiberia = geo.properties.name === "Liberia";
-              return (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  fill={isLiberia ? "#BF0A30" : "#D6D6DA"}
-                  stroke={isLiberia ? "#BF0A30" : "#FFFFFF"}
-                  strokeWidth={0.5}
-                  style={{
-                    default: { outline: "none" },
-                    hover: { outline: "none" },
-                    pressed: { outline: "none" }
-                  }}
-                />
-              );
-            })
-          }
-        </Geographies>
-
-        <Marker coordinates={[-9.4295, 6.4281]}>
-          <motion.circle 
-            style={{ opacity: markerOpacity }}
-            r={4}
-            fill="#BF0A30" 
-          />
-          <motion.circle 
-            r={12}
-            style={{ opacity: markerOpacity * 0.6 }}
-            fill="#BF0A30" 
-          />
-        </Marker>
-      </ComposableMap>
-
-      {/* Dynamic Label that fades in as zooming finishes */}
-      <motion.div 
-         style={{ opacity: Math.max(0, (zoomProgress - 0.5) * 2) }} 
-         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[calc(50%+1.5rem)] pointer-events-none mt-8 md:mt-16"
-      >
-        <span className="bg-bg text-accent text-[11px] font-bold uppercase tracking-[2px] px-3 py-1 rounded-full shadow-lg border border-border/50">
-          Liberia
-        </span>
-      </motion.div>
-    </div>
-  );
-}
-
 export default function Home() {
   const containerRef = useRef(null);
   const chapter2Ref = useRef<HTMLElement>(null);
   const chapter4Ref = useRef<HTMLElement>(null);
   
-  const prog2 = useStickyScrollProgress(chapter2Ref);
-  const prog4 = useStickyScrollProgress(chapter4Ref);
-
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -310,7 +186,9 @@ export default function Home() {
               </p>
             </motion.div>
             <div className="flex justify-center w-full">
-              <GlobeTracking progress={prog2} />
+              <Suspense fallback={<div className="w-full max-w-[280px] sm:max-w-[350px] md:max-w-[500px] aspect-square mx-auto" />}>
+                <GlobeTracking sectionRef={chapter2Ref} />
+              </Suspense>
             </div>
           </div>
         </div>
@@ -325,7 +203,7 @@ export default function Home() {
            transition={{ duration: 1.5 }}
            className="absolute inset-0 z-0 pointer-events-none"
         >
-           <img src={economyImg} className="w-full h-full object-cover grayscale mix-blend-multiply" />
+           <img loading="lazy" decoding="async" src={economyImg} className="w-full h-full object-cover grayscale mix-blend-multiply" />
         </motion.div>
         
         <div className="max-w-[1000px] mx-auto text-center relative z-10">
@@ -380,7 +258,7 @@ export default function Home() {
               </div>
 
               <div className="flex justify-center items-center">
-                 <SequentialPictograph progress={prog4} />
+                 <SequentialPictograph sectionRef={chapter4Ref} />
               </div>
            </div>
         </div>
@@ -395,7 +273,7 @@ export default function Home() {
            transition={{ duration: 1.5 }}
            className="absolute inset-0 z-0 pointer-events-none"
         >
-           <img src={classroomImg} className="w-full h-full object-cover grayscale mix-blend-multiply" />
+           <img loading="lazy" decoding="async" src={classroomImg} className="w-full h-full object-cover grayscale mix-blend-multiply" />
         </motion.div>
 
         <div className="max-w-[1000px] mx-auto text-center relative z-10">
@@ -491,7 +369,7 @@ export default function Home() {
                  className="order-1 lg:order-2 w-full h-[500px] lg:h-[650px] relative rounded-[4px] overflow-hidden border border-border shadow-lg"
               >
                  <Link to={`/blog/${featuredPost.slug}`} className="block w-full h-full group">
-                   <img src={featuredPost.image} alt={featuredPost.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+                   <img loading="lazy" decoding="async" src={featuredPost.image} alt={featuredPost.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                    <div className="absolute bottom-6 left-6 text-white">
                      <p className="text-[12px] font-bold uppercase tracking-[2px] text-white/80">{featuredPost.category}</p>
@@ -512,7 +390,7 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="rounded-[4px] overflow-hidden shadow-xl border border-border order-2 lg:order-1"
             >
-              <img src={scholarsImg} alt="Students with CECE's Dream" className="w-full h-[400px] lg:h-[600px] object-cover" />
+              <img loading="lazy" decoding="async" src={scholarsImg} alt="Students with CECE's Dream" className="w-full h-[400px] lg:h-[600px] object-cover" />
             </motion.div>
 
             <div className="order-1 lg:order-2">
@@ -550,7 +428,7 @@ export default function Home() {
        {/* Chapter 7: Call to Action */}
        <section className="relative py-32 md:py-40 text-center px-6 text-white overflow-hidden">
          <div className="absolute inset-0 z-0">
-            <img src={graduationImg} className="w-full h-full object-cover opacity-40 grayscale" />
+            <img loading="lazy" decoding="async" src={graduationImg} className="w-full h-full object-cover opacity-40 grayscale" />
             <div className="absolute inset-0 bg-text/80 mix-blend-multiply"></div>
          </div>
          

@@ -1,0 +1,42 @@
+# Type-checks and runs the Playwright suite (e2e/) against the production
+# build on every pull request and every push to main. It does not gate the
+# deploy: a failure here never holds back the nightly story sync.
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+      - name: Type-check
+        run: npm run lint
+      - name: Install browsers
+        run: npx playwright install --with-deps chromium webkit
+      - name: Playwright
+        run: npm run e2e
+      - name: Upload report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: test-results/
+          retention-days: 7
