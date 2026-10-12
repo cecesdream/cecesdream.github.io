@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+.gstack/
+test-results/
+playwright-report/

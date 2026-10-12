@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
+    "e2e": "playwright test",
     "sync-stories": "tsx scripts/sync-notion-stories.ts",
     "optimize-images": "tsx scripts/optimize-images.ts"
   },
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@notionhq/client": "^5.20.0",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^22.14.0",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.1.14",

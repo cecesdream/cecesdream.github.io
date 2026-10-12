@@ -16,6 +16,19 @@ Judge layout and performance on the production build, not the dev server:
 npm run build && npm run preview
 ```
 
+## Test
+
+```sh
+npx playwright install chromium webkit   # once
+npm run e2e
+```
+
+`e2e/` runs against the production build on iPhone (WebKit), iPhone SE,
+Android and desktop profiles: the mobile menu, no sideways scroll on any
+page, the not-found page, the globe, Zeffy's deferred loading, and the
+prerendered titles and preview tags. CI runs it on every pull request
+(`.github/workflows/test.yml`). Zeffy is blocked in tests.
+
 ## Deploy
 
 Every push to `main` builds and deploys (`.github/workflows/deploy.yml`).
