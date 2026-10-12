@@ -1,7 +1,12 @@
 import { motion } from "motion/react";
-import { Link } from "react-router-dom";
-import { Heart, GraduationCap, ArrowRight } from "lucide-react";
+import { Heart, GraduationCap } from "lucide-react";
 import { STATS } from "../data/stats";
+import ZeffyForm from "../components/ZeffyForm";
+
+const ZEFFY_FORM = "/embed/donation-form/sponsor-one-dreamer";
+
+const scrollToForm = () =>
+  document.getElementById("give")?.scrollIntoView({ behavior: "smooth", block: "start" });
 
 export default function Donate() {
   return (
@@ -42,12 +47,12 @@ export default function Donate() {
              
              <div className="p-8 md:p-12 flex flex-col md:flex-row gap-8 items-center justify-between">
                 <div className="flex-1 w-full">
-                  <div className="bg-bg border-2 border-accent rounded-[4px] p-6 text-center cursor-pointer hover:bg-accent/5 transition-colors relative mb-6">
+                  <div className="bg-bg border-2 border-accent rounded-[4px] p-6 text-center relative mb-6">
                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white text-[10px] font-bold uppercase tracking-[2px] px-3 py-1 rounded-full">Most Impactful</span>
                      <h3 className="serif text-[42px] font-bold text-text leading-[1] mb-1">$50</h3>
                      <p className="text-text-dim uppercase tracking-[1px] text-[12px] font-bold">Per Month</p>
                   </div>
-                  <div className="bg-bg border-2 border-border hover:border-text rounded-[4px] p-6 text-center cursor-pointer hover:bg-surface transition-colors">
+                  <div className="bg-bg border-2 border-border rounded-[4px] p-6 text-center">
                      <h3 className="serif text-[32px] font-bold text-text leading-[1] mb-1">$600</h3>
                      <p className="text-text-dim uppercase tracking-[1px] text-[12px] font-bold">Per Year</p>
                   </div>
@@ -55,7 +60,7 @@ export default function Donate() {
                 
                 <div className="flex-[1.5] w-full h-full flex flex-col justify-center">
                    <h4 className="text-[16px] font-bold text-text mb-4">What your sponsorship provides:</h4>
-                   <ul className="space-y-4 mb-8">
+                   <ul className="space-y-4">
                      <li className="flex items-start">
                        <Heart className="w-5 h-5 text-accent mr-3 mt-0.5 shrink-0" />
                        <span className="text-text-dim leading-[1.5]">Covers all essential tuition fees for the academic year.</span>
@@ -69,19 +74,11 @@ export default function Donate() {
                        <span className="text-text-dim leading-[1.5]">Offers hope, encouragement, and a pathway to a better future.</span>
                      </li>
                    </ul>
-                   
-                   <a 
-                     href="https://donorbox.org/cece-790449" 
-                     target="_blank" 
-                     rel="noopener noreferrer"
-                     className="w-full bg-accent text-white py-[20px] rounded-[2px] text-[15px] font-bold uppercase tracking-[1px] hover:bg-[#a00828] transition-colors flex justify-center items-center shadow-lg group"
-                   >
-                     Complete via Donorbox <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
-                   </a>
-                   <p className="text-center text-[12px] text-text-dim mt-4">
-                     You will be securely redirected to our Donorbox page.
-                   </p>
                 </div>
+             </div>
+
+             <div id="give" className="scroll-mt-24 border-t border-border py-4 md:p-8">
+                <ZeffyForm formPath={ZEFFY_FORM} title="Donation form powered by Zeffy" />
              </div>
           </motion.div>
 
@@ -116,16 +113,15 @@ export default function Donate() {
              <div className="bg-text text-white p-8 rounded-[4px]">
                 <h3 className="serif text-[24px] mb-4">Other Ways to Help</h3>
                 <p className="text-white/70 leading-[1.6] mb-6">
-                  Not ready to make a monthly commitment? You can also make a one-time donation of any amount through our Donorbox portal.
+                  Not ready to make a monthly commitment? The same form takes a one-time gift of any amount.
                 </p>
-                <a 
-                   href="https://donorbox.org/cece-790449" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
+                <button
+                   type="button"
+                   onClick={scrollToForm}
                    className="inline-block border border-white/30 hover:bg-white hover:text-text hover:border-white px-6 py-3 rounded-[2px] text-[12px] font-bold uppercase tracking-[1.5px] transition-colors"
                 >
                   One-time Donation
-                </a>
+                </button>
              </div>
           </motion.div>
           
