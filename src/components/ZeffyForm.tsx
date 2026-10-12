@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SCRIPT_SRC = "https://www.zeffy.com/embed/v2/zeffy-embed.js";
 
@@ -22,11 +22,37 @@ interface ZeffyFormProps {
  * page load: the script is added once and `Zeffy.embed.init()` is called on
  * every mount after that. If the script can't load (an ad blocker, say), the
  * plain iframe Zeffy supplies as a fallback is shown instead.
+ *
+ * Zeffy's script brings Cloudflare and reCAPTCHA with it, and the newsletter
+ * form sits on every page above the footer, so nothing loads until the form is
+ * within a screen or two of the viewport.
  */
 export default function ZeffyForm({ formPath, title, fallbackHeight = 800 }: ZeffyFormProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const fallbackRef = useRef<HTMLDivElement>(null);
+  const [near, setNear] = useState(false);
 
   useEffect(() => {
+    const root = rootRef.current;
+    if (!root || !("IntersectionObserver" in window)) {
+      setNear(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setNear(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "1200px 0px" },
+    );
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!near) return;
     const showFallback = () => {
       const box = fallbackRef.current;
       if (!box) return;
@@ -48,10 +74,10 @@ export default function ZeffyForm({ formPath, title, fallbackHeight = 800 }: Zef
     }
     script.addEventListener("error", showFallback);
     return () => script?.removeEventListener("error", showFallback);
-  }, [formPath]);
+  }, [formPath, near]);
 
   return (
-    <div>
+    <div ref={rootRef}>
       <div data-zeffy-embed data-form-url={formPath} />
       <div data-zeffy-embed-fallback ref={fallbackRef} style={{ display: "none" }}>
         <div className="relative overflow-hidden w-full" style={{ height: fallbackHeight }}>

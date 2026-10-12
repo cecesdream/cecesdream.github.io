@@ -8,6 +8,18 @@ export default defineConfig(({mode}) => {
   return {
     plugins: [react(), tailwindcss()],
     base: '/',
+    build: {
+      rollupOptions: {
+        output: {
+          // The nightly story sync changes posts.json and so the app chunk's hash;
+          // keep libraries in their own chunk so repeat visitors keep them cached.
+          manualChunks: {
+            react: ['react', 'react-dom', 'react-dom/client', 'react-router-dom'],
+            motion: ['motion/react'],
+          },
+        },
+      },
+    },
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },
