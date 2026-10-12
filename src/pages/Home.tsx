@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform, useInView, useSpring, useMotionValueEvent } from "motion/react";
 import { Link } from "react-router-dom";
 import { Heart, User, ArrowDown, ArrowRight, MapPin } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, type RefObject } from "react";
 import heroImg from "../assets/liberia-hero.jpg";
 import economyImg from "../assets/economy-struggle.jpg";
 import scholarsImg from "../assets/kids-smiling.jpg";
@@ -22,54 +22,57 @@ import {
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-function useStickyScrollProgress(ref: React.RefObject<HTMLElement>) {
-  const [progress, setProgress] = useState(0);
+// Progress (0..1) through a pinned section, mapped by `select`. The state lives
+// in the component that draws it and only changes when `select`'s result does,
+// so scrolling doesn't re-render the whole page every frame.
+function useStickyScrollProgress<T>(ref: RefObject<HTMLElement | null>, select: (p: number) => T): T {
+  const [value, setValue] = useState(() => select(0));
 
   useEffect(() => {
-    let tick = false;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      // Total distance the user scrolls vertically while the container is pinned
+      const totalScroll = rect.height - window.innerHeight;
+      // How far down the pinned container has traveled
+      let p = -rect.top / totalScroll;
+      if (!isFinite(p) || isNaN(p)) p = 0;
+      setValue(select(Math.max(0, Math.min(1, p))));
+    };
     const handleScroll = () => {
-      if (tick) return;
-      tick = true;
-      
-      window.requestAnimationFrame(() => {
-        if (ref.current) {
-          const rect = ref.current.getBoundingClientRect();
-          const winH = window.innerHeight;
-          // Total distance the user scrolls vertically while the container is pinned
-          const totalScroll = rect.height - winH;
-          // How far down the pinned container has traveled
-          let p = -rect.top / totalScroll;
-          
-          if (!isFinite(p) || isNaN(p)) p = 0;
-          p = Math.max(0, Math.min(1, p));
-          setProgress(p);
-        }
-        tick = false;
-      });
+      if (!frame) frame = window.requestAnimationFrame(update);
     };
 
-    window.addEventListener("scroll", handleScroll, true);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleScroll);
-    setTimeout(handleScroll, 100);
+    const timeout = setTimeout(handleScroll, 100);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll, true);
+      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
+      clearTimeout(timeout);
+      if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [ref]);
+  }, [ref, select]);
 
-  return progress;
+  return value;
 }
 
 // Sequential Pictograph Component
 const PRIMARY_NER = Math.round(STATS.primaryNER.value); // 46
 const COMPLETION_RATE = Math.round(STATS.primaryCompletionRate.value); // 10
 
-function SequentialPictograph({ progress }: { progress: number }) {
-  let step = 0;
-  if (progress > 0.05) step = 1;
-  if (progress > 0.40) step = 2;
-  if (progress > 0.75) step = 3;
+const pictographStep = (progress: number) => {
+  if (progress > 0.75) return 3;
+  if (progress > 0.40) return 2;
+  if (progress > 0.05) return 1;
+  return 0;
+};
+
+function SequentialPictograph({ sectionRef }: { sectionRef: RefObject<HTMLElement | null> }) {
+  const step = useStickyScrollProgress(sectionRef, pictographStep);
 
   const getText = () => {
     if (step === 0 || step === 1) return { num: "100", label: "For every 100 kids in Liberia...", color: "text-[#002868]" };
@@ -148,7 +151,11 @@ function SequentialPictograph({ progress }: { progress: number }) {
 }
 
 // Interactive Scroll-Driven SVG Globe
-function GlobeTracking({ progress }: { progress: number }) {
+// 1/500th of the section is ~1.5px of scroll on a phone; finer steps only cost renders.
+const globeProgress = (progress: number) => Math.round(progress * 500) / 500;
+
+function GlobeTracking({ sectionRef }: { sectionRef: RefObject<HTMLElement | null> }) {
+  const progress = useStickyScrollProgress(sectionRef, globeProgress);
   // Phase 1 (0 to 0.5): Rotate
   // Phase 2 (0.5 to 1.0): Zoom into Liberia
   const rotProgress = Math.min(1, progress * 2);
@@ -232,9 +239,6 @@ export default function Home() {
   const chapter2Ref = useRef<HTMLElement>(null);
   const chapter4Ref = useRef<HTMLElement>(null);
   
-  const prog2 = useStickyScrollProgress(chapter2Ref);
-  const prog4 = useStickyScrollProgress(chapter4Ref);
-
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -310,7 +314,7 @@ export default function Home() {
               </p>
             </motion.div>
             <div className="flex justify-center w-full">
-              <GlobeTracking progress={prog2} />
+              <GlobeTracking sectionRef={chapter2Ref} />
             </div>
           </div>
         </div>
@@ -325,7 +329,7 @@ export default function Home() {
            transition={{ duration: 1.5 }}
            className="absolute inset-0 z-0 pointer-events-none"
         >
-           <img src={economyImg} className="w-full h-full object-cover grayscale mix-blend-multiply" />
+           <img loading="lazy" decoding="async" src={economyImg} className="w-full h-full object-cover grayscale mix-blend-multiply" />
         </motion.div>
         
         <div className="max-w-[1000px] mx-auto text-center relative z-10">
@@ -380,7 +384,7 @@ export default function Home() {
               </div>
 
               <div className="flex justify-center items-center">
-                 <SequentialPictograph progress={prog4} />
+                 <SequentialPictograph sectionRef={chapter4Ref} />
               </div>
            </div>
         </div>
@@ -395,7 +399,7 @@ export default function Home() {
            transition={{ duration: 1.5 }}
            className="absolute inset-0 z-0 pointer-events-none"
         >
-           <img src={classroomImg} className="w-full h-full object-cover grayscale mix-blend-multiply" />
+           <img loading="lazy" decoding="async" src={classroomImg} className="w-full h-full object-cover grayscale mix-blend-multiply" />
         </motion.div>
 
         <div className="max-w-[1000px] mx-auto text-center relative z-10">
@@ -491,7 +495,7 @@ export default function Home() {
                  className="order-1 lg:order-2 w-full h-[500px] lg:h-[650px] relative rounded-[4px] overflow-hidden border border-border shadow-lg"
               >
                  <Link to={`/blog/${featuredPost.slug}`} className="block w-full h-full group">
-                   <img src={featuredPost.image} alt={featuredPost.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+                   <img loading="lazy" decoding="async" src={featuredPost.image} alt={featuredPost.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                    <div className="absolute bottom-6 left-6 text-white">
                      <p className="text-[12px] font-bold uppercase tracking-[2px] text-white/80">{featuredPost.category}</p>
@@ -512,7 +516,7 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="rounded-[4px] overflow-hidden shadow-xl border border-border order-2 lg:order-1"
             >
-              <img src={scholarsImg} alt="Students with CECE's Dream" className="w-full h-[400px] lg:h-[600px] object-cover" />
+              <img loading="lazy" decoding="async" src={scholarsImg} alt="Students with CECE's Dream" className="w-full h-[400px] lg:h-[600px] object-cover" />
             </motion.div>
 
             <div className="order-1 lg:order-2">
@@ -550,7 +554,7 @@ export default function Home() {
        {/* Chapter 7: Call to Action */}
        <section className="relative py-32 md:py-40 text-center px-6 text-white overflow-hidden">
          <div className="absolute inset-0 z-0">
-            <img src={graduationImg} className="w-full h-full object-cover opacity-40 grayscale" />
+            <img loading="lazy" decoding="async" src={graduationImg} className="w-full h-full object-cover opacity-40 grayscale" />
             <div className="absolute inset-0 bg-text/80 mix-blend-multiply"></div>
          </div>
          

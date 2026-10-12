@@ -11,13 +11,23 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setIsOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen]);
+
+  // A link to the page you're already on doesn't change the path, so close here too.
+  const close = () => setIsOpen(false);
 
   const navLinks = [
     { text: "Our Mission", path: "/about" },
@@ -51,7 +61,14 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <button className="md:hidden text-text" onClick={() => setIsOpen(true)}>
+          <button
+            type="button"
+            className="md:hidden text-text w-12 h-12 -mr-2 flex items-center justify-center touch-manipulation"
+            onClick={() => setIsOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
+          >
             <Menu className="w-8 h-8" />
           </button>
         </div>
@@ -60,27 +77,38 @@ export default function Navbar() {
       <AnimatePresence>
         {isOpen && (
           <motion.div 
+            id="mobile-menu"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
             className="absolute top-0 left-0 w-full bg-surface border-b border-border flex flex-col p-6 shadow-2xl md:hidden"
           >
             <div className="flex justify-between items-center mb-8">
               <span className="serif text-xl tracking-[2px] uppercase text-text font-bold">CECE's Dream</span>
-              <button onClick={() => setIsOpen(false)}><X className="w-8 h-8 text-text" /></button>
+              <button
+                type="button"
+                className="w-12 h-12 -mr-2 flex items-center justify-center touch-manipulation"
+                onClick={close}
+                aria-label="Close menu"
+              >
+                <X className="w-8 h-8 text-text" />
+              </button>
             </div>
-            <div className="flex flex-col space-y-6 text-center">
+            <div className="flex flex-col space-y-2 text-center">
               {navLinks.map((link) => (
                 <Link 
                   key={link.path} 
                   to={link.path} 
-                  className="text-[14px] uppercase tracking-[1.5px] font-bold text-text-dim hover:text-accent"
+                  onClick={close}
+                  className="py-2 text-[14px] uppercase tracking-[1.5px] font-bold text-text-dim hover:text-accent"
                 >
                   {link.text}
                 </Link>
               ))}
               <Link 
                 to="/donate" 
+                onClick={close}
                 className="bg-accent text-white px-6 py-4 font-bold text-[14px] tracking-[1.5px] uppercase mx-auto rounded-[2px] shadow-sm"
               >
                 Donate Now

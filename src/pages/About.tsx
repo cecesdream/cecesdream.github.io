@@ -145,7 +145,7 @@ export default function About() {
                 >
                   <div className="w-[120px] h-[120px] md:w-[150px] md:h-[150px] rounded-full overflow-hidden mb-6 border border-border bg-bg flex items-center justify-center shadow-sm">
                     {member.img ? (
-                      <img src={member.img} alt={member.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      <img loading="lazy" decoding="async" src={member.img} alt={member.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     ) : (
                       <div className="text-text-dim/20 bg-surface w-full h-full flex items-center justify-center">No Image</div>
                     )}
