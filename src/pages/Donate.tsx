@@ -78,6 +78,9 @@ export default function Donate() {
              </div>
 
              <div id="give" className="scroll-mt-24 border-t border-border py-4 md:p-8">
+                <p className="max-w-[600px] mx-auto mb-4 px-4 md:px-0 text-center text-[13px] text-text-dim leading-[1.6]">
+                  We use Zeffy, which charges CECE's Dream nothing, so your whole gift reaches students. At checkout Zeffy suggests an optional tip for itself; you can set it to $0 by choosing "Other".
+                </p>
                 <ZeffyForm formPath={ZEFFY_FORM} title="Donation form powered by Zeffy" />
              </div>
           </motion.div>
