@@ -6,6 +6,8 @@
  * `<path>/index.html` (GitHub Pages resolves an extensionless address to one
  * or the other) with that page's title, description, preview image and
  * canonical URL. The body stays the app shell; React renders it as before.
+ * The home page also carries a NonprofitOrganization JSON-LD block, which
+ * Google reads for the organization's search listing.
  * Also writes 404.html (noindex), sitemap.xml and robots.txt.
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -26,6 +28,24 @@ const MANAGED = [
   /\s*<!-- (?:Open Graph \/ Facebook|Twitter) -->/g,
 ];
 
+const ORGANIZATION = {
+  "@context": "https://schema.org",
+  "@type": "NonprofitOrganization",
+  name: "CECE's Dream",
+  url: SITE_URL,
+  logo: `${SITE_URL}/favicon.png`,
+  image: `${SITE_URL}/og-image.jpg`,
+  description: metaFor("/")!.description,
+  email: "cece@cecesdream.org",
+  nonprofitStatus: "Nonprofit501c3",
+  sameAs: ["https://www.facebook.com/cecesdreamorg/", "https://www.instagram.com/ceces.dream"],
+  potentialAction: { "@type": "DonateAction", target: `${SITE_URL}/donate` },
+};
+
+// "<" is escaped so no string in the data can close the script tag.
+const jsonLd = (data: object) =>
+  `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
+
 function head(meta: PageMeta, path: string | null): string {
   const url = path === null ? null : SITE_URL + path;
   const image = SITE_URL + meta.image;
@@ -43,6 +63,7 @@ function head(meta: PageMeta, path: string | null): string {
     `<meta name="twitter:title" content="${escape(meta.title)}" />`,
     `<meta name="twitter:description" content="${escape(meta.description)}" />`,
     `<meta name="twitter:image" content="${image}" />`,
+    path === "/" ? jsonLd(ORGANIZATION) : "",
   ];
   return tags.filter(Boolean).map((t) => `    ${t}`).join("\n");
 }

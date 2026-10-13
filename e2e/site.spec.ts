@@ -113,6 +113,25 @@ test.describe("prerendered pages", () => {
     expect(about).toContain("<title>Our Mission | CECE's Dream</title>");
   });
 
+  test("the home page describes the organization for search engines", async ({ request }) => {
+    const html = await (await request.get("/")).text();
+    const blocks = [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)];
+    expect(blocks).toHaveLength(1);
+    const org = JSON.parse(blocks[0][1]);
+    expect(org["@type"]).toBe("NonprofitOrganization");
+    expect((await request.get(new URL(org.logo).pathname)).status()).toBe(200);
+    // Only the home page carries it.
+    expect(await (await request.get("/about.html")).text()).not.toContain("ld+json");
+  });
+
+  test("story images are sized for phones", async ({ request }) => {
+    for (const post of posts.filter((p) => p.image)) {
+      const res = await request.get(post.image);
+      expect(res.status()).toBe(200);
+      expect((await res.body()).length, post.image).toBeLessThan(800_000);
+    }
+  });
+
   test("the preview image exists", async ({ request }) => {
     const html = await (await request.get("/")).text();
     const image = html.match(/<meta property="og:image" content="https:\/\/cecesdream\.org([^"]+)"/)![1];
