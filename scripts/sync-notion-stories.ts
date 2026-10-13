@@ -2,6 +2,7 @@ import { Client } from "@notionhq/client";
 import { writeFile, mkdir, readdir, unlink } from "node:fs/promises";
 import { join, extname } from "node:path";
 import dotenv from "dotenv";
+import sharp from "sharp";
 
 dotenv.config({ path: [".env.local", ".env"] });
 
@@ -53,21 +54,40 @@ function escapeAttr(s: string) {
   return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
 
+// Phone photos arrive from Notion at full size (a 3072x4080 hero was 2.6 MB).
+// Story images never display wider than the screen, and link previews (WhatsApp
+// in particular) drop large images, so each one is shrunk on the way in.
+const IMAGE_MAX_WIDTH = 1600;
+const JPG_QUALITY = 80;
+
+// Returns the file extension the image was written with. Animated GIFs and SVGs
+// are kept as they are; anything with transparency stays PNG; the rest is JPEG.
+async function optimizeImage(buf: Buffer, ext: string): Promise<{ buf: Buffer; ext: string }> {
+  if (ext === ".gif" || ext === ".svg") return { buf, ext };
+  const img = sharp(buf, { failOn: "none" });
+  const meta = await img.metadata();
+  // .rotate() applies the EXIF orientation, which is dropped from the output.
+  const resized = img.rotate().resize({ width: IMAGE_MAX_WIDTH, withoutEnlargement: true });
+  if (meta.hasAlpha) return { buf: await resized.png({ compressionLevel: 9, palette: true }).toBuffer(), ext: ".png" };
+  return { buf: await resized.jpeg({ quality: JPG_QUALITY, mozjpeg: true }).toBuffer(), ext: ".jpg" };
+}
+
 // Notion-hosted image URLs are presigned S3 links that expire ~1 hour after fetch.
 // They MUST be downloaded at build time and served from our own /public dir.
 async function downloadImage(url: string, destBasename: string): Promise<string> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to download image: ${res.status} ${url}`);
   const contentType = res.headers.get("content-type") || "";
-  let ext = extname(new URL(url).pathname);
+  let ext = extname(new URL(url).pathname).toLowerCase();
   if (!ext) {
     if (contentType.includes("png")) ext = ".png";
     else if (contentType.includes("webp")) ext = ".webp";
+    else if (contentType.includes("gif")) ext = ".gif";
     else ext = ".jpg";
   }
-  const filename = `${destBasename}${ext}`;
-  const buf = Buffer.from(await res.arrayBuffer());
-  await writeFile(join(IMAGES_DIR, filename), buf);
+  const optimized = await optimizeImage(Buffer.from(await res.arrayBuffer()), ext);
+  const filename = `${destBasename}${optimized.ext}`;
+  await writeFile(join(IMAGES_DIR, filename), optimized.buf);
   return `/story-images/${filename}`;
 }
 
