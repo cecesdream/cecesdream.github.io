@@ -3,6 +3,7 @@ import { writeFile, mkdir, readdir, unlink } from "node:fs/promises";
 import { join, extname } from "node:path";
 import dotenv from "dotenv";
 import sharp from "sharp";
+import { escapeAttr, escapeHTML, isSafeSlug, richTextToHTML } from "./notion-html.ts";
 
 dotenv.config({ path: [".env.local", ".env"] });
 
@@ -33,37 +34,18 @@ function plainText(rich: any[]): string {
   return rich.map((r) => r.plain_text).join("");
 }
 
-function richTextToHTML(rich: any[]): string {
-  return rich
-    .map((r) => {
-      let text = escapeHTML(r.plain_text);
-      const a = r.annotations || {};
-      if (a.bold) text = `<strong>${text}</strong>`;
-      if (a.italic) text = `<em>${text}</em>`;
-      if (a.code) text = `<code>${text}</code>`;
-      if (r.href) text = `<a href="${escapeAttr(r.href)}">${text}</a>`;
-      return text;
-    })
-    .join("");
-}
-
-function escapeHTML(s: string) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-function escapeAttr(s: string) {
-  return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
-}
-
 // Phone photos arrive from Notion at full size (a 3072x4080 hero was 2.6 MB).
 // Story images never display wider than the screen, and link previews (WhatsApp
 // in particular) drop large images, so each one is shrunk on the way in.
 const IMAGE_MAX_WIDTH = 1600;
 const JPG_QUALITY = 80;
 
-// Returns the file extension the image was written with. Animated GIFs and SVGs
-// are kept as they are; anything with transparency stays PNG; the rest is JPEG.
+// Returns the file extension the image was written with. Real GIFs are kept as
+// they are so animation survives; everything else, SVG included, is redrawn by
+// sharp, so no script or markup in the source file reaches cecesdream.org.
+// Anything with transparency becomes PNG; the rest is JPEG.
 async function optimizeImage(buf: Buffer, ext: string): Promise<{ buf: Buffer; ext: string }> {
-  if (ext === ".gif" || ext === ".svg") return { buf, ext };
+  if (ext === ".gif" && buf.subarray(0, 4).toString("latin1") === "GIF8") return { buf, ext };
   const img = sharp(buf, { failOn: "none" });
   const meta = await img.metadata();
   // .rotate() applies the EXIF orientation, which is dropped from the output.
@@ -225,6 +207,10 @@ async function main() {
 
     if (!slug) {
       console.warn(`Skipping page "${title}" — missing Slug`);
+      continue;
+    }
+    if (!isSafeSlug(slug)) {
+      console.warn(`Skipping page "${title}" — Slug "${slug}" must be lowercase words joined by hyphens`);
       continue;
     }
 
